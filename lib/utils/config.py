@@ -30,6 +30,12 @@ class KrbRelayxConfig(NTLMRelayxConfig):
         # Custom options
         self.victim = None
 
+        # Shadow Credentials attack options
+        self.IsShadowCredentialsAttack = False
+        self.ShadowCredentialsPFXPassword = None
+        self.ShadowCredentialsExportType = None
+        self.ShadowCredentialsOutfilePath = None
+
     # Make sure we have a fixed version of this to avoid incompatibilities with impacket
     def setLDAPOptions(self, dumpdomain, addda, aclattack, validateprivs, escalateuser, addcomputer, delegateaccess, dumplaps, dumpgmsa, dumpadcs, sid):
         self.dumpdomain = dumpdomain
@@ -55,3 +61,12 @@ class KrbRelayxConfig(NTLMRelayxConfig):
     def setKrbOptions(self, outformat, victim):
         self.format = outformat
         self.victim = victim
+
+    def setIsShadowCredentialsAttack(self, IsShadowCredentialsAttack):
+        self.IsShadowCredentialsAttack = IsShadowCredentialsAttack
+
+    def setShadowCredentialsOptions(self, ShadowCredentialsTarget, ShadowCredentialsPFXPassword, ShadowCredentialsExportType, ShadowCredentialsOutfilePath):
+        self.ShadowCredentialsTarget = ShadowCredentialsTarget
+        self.ShadowCredentialsPFXPassword = ShadowCredentialsPFXPassword
+        self.ShadowCredentialsExportType = ShadowCredentialsExportType
+        self.ShadowCredentialsOutfilePath = ShadowCredentialsOutfilePath
