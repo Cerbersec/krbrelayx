@@ -41,6 +41,7 @@ import argparse
 import sys
 import binascii
 import logging
+from time import sleep
 
 from impacket.examples import logger
 from impacket.examples.ntlmrelayx.attacks import PROTOCOL_ATTACKS
@@ -98,9 +99,13 @@ def main():
                 c.setMode('REDIRECT')
                 c.setRedirectHost(options.r)
 
-            s = server(c)
-            s.start()
-            threads.add(s)
+            if server is HTTPKrbRelayServer:
+                for port in options.http_port:
+                    c.setListeningPort(port)
+                    s = server(c)
+                    s.start()
+                    threads.add(s)
+                    sleep(0.1)
         return c
 
     # Init the example's logger theme
@@ -125,6 +130,7 @@ def main():
     # Interface address specification
     parser.add_argument('-ip', '--interface-ip', action='store', metavar='INTERFACE_IP', help='IP address of interface to '
                   'bind SMB and HTTP servers',default='')
+    parser.add_argument('--http-poer', help='Port(s) to listen on hTTP server. Can specify multiple ports by separating them with `,`, and ranges with `-`. Ex: `80,800-8010`', default="80")
 
     parser.add_argument('-r', action='store', metavar='SMBSERVER', help='Redirect HTTP requests to a file:// path on SMBSERVER')
     parser.add_argument('-l', '--lootdir', action='store', type=str, required=False, metavar='LOOTDIR', default='.', help='Loot '
@@ -179,6 +185,7 @@ def main():
     ldapoptions.add_argument('--dump-laps', action='store_true', required=False, help='Attempt to dump any LAPS passwords readable by the user')
     ldapoptions.add_argument('--dump-gmsa', action='store_true', required=False, help='Attempt to dump any gMSA passwords readable by the user')
     ldapoptions.add_argument('--dump-adcs', action='store_true', required=False, help='Attempt to dump ADCS enrollment services and certificate templates info')
+    ldapoptions.add_argument('--add-dns-record', nargs=2, action='store', metavar=('NAME', 'IPADDR'), required=False, help='Add the <NAME> record to the DNS via LDAP pointing to <IPADDR>')
 
     # AD CS options
     adcsoptions = parser.add_argument_group("AD CS attack options")
