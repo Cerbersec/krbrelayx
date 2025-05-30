@@ -130,7 +130,7 @@ def main():
     # Interface address specification
     parser.add_argument('-ip', '--interface-ip', action='store', metavar='INTERFACE_IP', help='IP address of interface to '
                   'bind SMB and HTTP servers',default='')
-    parser.add_argument('--http-poer', help='Port(s) to listen on hTTP server. Can specify multiple ports by separating them with `,`, and ranges with `-`. Ex: `80,800-8010`', default="80")
+    parser.add_argument('--http-port', help='Port(s) to listen on hTTP server. Can specify multiple ports by separating them with `,`, and ranges with `-`. Ex: `80,800-8010`', default="80")
 
     parser.add_argument('-r', action='store', metavar='SMBSERVER', help='Redirect HTTP requests to a file:// path on SMBSERVER')
     parser.add_argument('-l', '--lootdir', action='store', type=str, required=False, metavar='LOOTDIR', default='.', help='Loot '
