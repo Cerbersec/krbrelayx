@@ -48,6 +48,7 @@ from impacket.examples.ntlmrelayx.attacks import PROTOCOL_ATTACKS
 from impacket.examples.ntlmrelayx.utils.targetsutils import TargetsProcessor, TargetsFileWatcher
 from lib.servers import SMBRelayServer, HTTPKrbRelayServer, DNSRelayServer
 from lib.utils.config import KrbRelayxConfig
+from impacket.examples.ntlmrelayx.utils.config import parse_listening_ports
 
 RELAY_SERVERS = ( SMBRelayServer, HTTPKrbRelayServer, DNSRelayServer )
 
@@ -219,6 +220,11 @@ def main():
     # ToDo: Do this better somehow
     from lib.clients import PROTOCOL_CLIENTS
 
+    if options.add_dns_record:
+        dns_name = options.add_dns_record[0].lower()
+        if dns_name == 'wpad' or dns_name == '*':
+            logging.warning('You are asking to add a `wpad` or a wildcard DNS name. This can cause disruption in larger networks (using multiple DNS subdomains) or if workstations already use a proxy config.')
+
 
     if options.codec is not None:
         codec = options.codec
@@ -240,6 +246,16 @@ def main():
             targetSystem = None
             mode = 'EXPORT'
 
+    if not options.no_http_server:
+        try:
+            options.http_port = parse_listening_ports(options.http_port)
+        except ValueError:
+            logging.error("Incorrect specification of port range for HTTP server")
+            sys.exit(1)
+
+        if options.r is not None:
+            logging.info("Running HTTP server in redirect mode")
+
     if not options.krbpass and not options.krbhexpass and not options.hashes and not options.aesKey:
         logging.info("Running in kerberos relay mode because no credentials were specified.")
         if mode == 'EXPORT':
@@ -248,9 +264,6 @@ def main():
         mode = 'RELAY'
     else:
         logging.info("Running in unconstrained delegation abuse mode using the specified credentials.")
-
-    if options.r is not None:
-        logging.info("Running HTTP server in redirect mode")
 
     if targetSystem is not None and options.w:
         watchthread = TargetsFileWatcher(targetSystem)
